@@ -2,28 +2,28 @@ import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { RootState } from "../redux/store";
 import { useEffect, useState } from "react";
-import { MdCheckCircle } from "react-icons/md";
-import { MdEdit } from "react-icons/md";
-import { FaTrashCan } from "react-icons/fa6";
+import { MdCheckCircle, MdEdit } from "react-icons/md";
+import { FaTrashCan, FaXmark } from "react-icons/fa6";
 import { RiPlayListAddFill } from "react-icons/ri";
-import { FaXmark } from "react-icons/fa6";
+
+// Task and List types
+interface TaskType {
+  taskName: string;
+  completed: boolean;
+}
+interface ToDoListType {
+  listId: number;
+  listName: string;
+  done: boolean;
+  tasks: TaskType[];
+}
 
 const ToDoList = () => {
-  interface TaskType {
-    taskName: string;
-    completed: boolean;
-  }
-  interface ToDoListType {
-    listId: number;
-    listName: string;
-    done: boolean;
-    tasks: TaskType[];
-  }
-
-  const nanigate = useNavigate();
+  const navigate = useNavigate();
   const { listId } = useParams();
   const userEmail = useSelector((state: RootState) => state.user.userEmail);
 
+  // Load the selected list from localStorage
   const toDoLists = JSON.parse(
     localStorage.getItem(userEmail)!
   ) as ToDoListType[];
@@ -32,23 +32,23 @@ const ToDoList = () => {
   const [form, setForm] = useState(toDoList!);
   const [save, setSave] = useState(false);
   const [addingTask, setAddingTask] = useState(false);
-  const [addTask, setAddTask] = useState<string>("");
+  const [addTaskText, setAddTaskText] = useState<string>("");
+  const [editTaskText, setEditTaskText] = useState("");
   const [editIndex, setEditIndex] = useState<number | null>(null);
-  const [editTask, setEditTask] = useState("");
 
   const tasks = form.tasks;
   const tasksDoneCount = tasks.filter((task) => task.completed == true).length;
 
   const totalCount = tasks.length;
 
-  const resolt = ((tasksDoneCount * 100) / totalCount).toFixed(0);
+  const progressPercent = ((tasksDoneCount * 100) / totalCount).toFixed(0);
   useEffect(() => {
-    if (+resolt == 100) {
+    if (+progressPercent == 100) {
       setForm({ ...form, done: true });
     } else {
       setForm({ ...form, done: false });
     }
-  }, [form.tasks]);
+  }, [progressPercent]);
 
   const listEdit = () => {
     const updatedLists = toDoLists.map((list) =>
@@ -57,9 +57,64 @@ const ToDoList = () => {
     localStorage.setItem(userEmail, JSON.stringify(updatedLists));
     setSave(true);
     setTimeout(() => {
-      nanigate("/");
+      navigate("/");
     }, 1000);
   };
+
+  const addTaskFun = () => {
+    const updateTasks = [...tasks, { taskName: addTaskText, completed: false }];
+
+    setForm({ ...form, tasks: updateTasks });
+    setAddTaskText("");
+  };
+
+  const toggleComplete = (index: number) => {
+    const updated = [...form.tasks];
+    updated[index].completed = !updated[index].completed;
+    setForm({ ...form, tasks: updated });
+  };
+
+  const editTask = (index: number) => {
+    const updateTasks = tasks.map((task, i) =>
+      i === index ? { ...task, taskName: editTaskText } : task
+    );
+    setForm({ ...form, tasks: updateTasks });
+  };
+
+  const deleteTask = (index: number) => {
+    const updated = form.tasks.filter((_, i) => i !== index);
+    setForm({ ...form, tasks: updated });
+  };
+
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
+  const handleKeyDown = (e: KeyboardEvent) => {
+    const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
+
+    if ((isMac ? e.metaKey : e.ctrlKey) && e.key === "n") {
+      e.preventDefault();
+      addTaskFun();
+    }
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev === null ? 0 : prev + 1));
+    }
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev === null ? 0 : Math.max(prev - 1, 0)));
+    }
+
+    if (e.key === " " && selectedIndex !== null) {
+      e.preventDefault();
+      toggleComplete(selectedIndex);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedIndex]);
 
   return (
     <div>
@@ -92,9 +147,9 @@ const ToDoList = () => {
       </div>
       <progress
         className={`progress transition-all progress-primary dark:bg-primary-content w-full ${
-          Number(resolt) == 100 ? "animate-bounce" : "animate-pulse"
+          Number(progressPercent) == 100 ? "animate-bounce" : "animate-pulse"
         } `}
-        value={resolt}
+        value={progressPercent}
         max="100"
       ></progress>
       <ul className="w-1/2 max-w-lg">
@@ -102,10 +157,7 @@ const ToDoList = () => {
           <li key={index} className="my-4 flex items-center gap-4">
             <button
               className="btn btn-outline btn-error btn-sm text-xl px-1 rounded-lg"
-              onClick={() => {
-                const updateTask = tasks.filter((_, i) => i !== index);
-                setForm({ ...form, tasks: updateTask });
-              }}
+              onClick={() => deleteTask(index)}
             >
               <FaTrashCan />
             </button>
@@ -113,7 +165,7 @@ const ToDoList = () => {
               className="btn btn-outline btn-success btn-sm text-xl px-1 rounded-lg"
               onClick={() => {
                 setEditIndex(index);
-                setEditTask(task.taskName);
+                setEditTaskText(task.taskName);
               }}
             >
               <MdEdit />
@@ -123,23 +175,17 @@ const ToDoList = () => {
                 <input
                   type="text"
                   className="input input-primary w-full"
-                  value={editTask}
+                  value={editTaskText}
                   placeholder="Edit Task"
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setEditTask(e.target.value)
+                    setEditTaskText(e.target.value)
                   }
                 />
                 <div className=" absolute right-0 top-0">
                   <button
                     className="btn btn-primary px-2 rounded-none"
                     type="submit"
-                    onClick={() => {
-                      const updateTasks = tasks.map((task, i) =>
-                        i === index ? { ...task, taskName: editTask } : task
-                      );
-                      setForm({ ...form, tasks: updateTasks });
-                      setEditIndex(null);
-                    }}
+                    onClick={() => editTask(index)}
                   >
                     edited
                   </button>
@@ -155,19 +201,12 @@ const ToDoList = () => {
                 </div>
               </div>
             ) : (
-              <label className="fieldset-label w-fit">
+              <label className="fieldset-label w-fit ">
                 <input
                   type="checkbox"
                   checked={form.tasks[index]?.completed}
                   className="checkbox checkbox-primary"
-                  onChange={() => {
-                    const updateTask = [...form.tasks];
-                    updateTask[index] = {
-                      ...updateTask[index],
-                      completed: !updateTask[index].completed,
-                    };
-                    setForm({ ...form, tasks: updateTask });
-                  }}
+                  onChange={() => toggleComplete(index)}
                 />
                 <p className="text-slate-700 dark:text-indigo-200">
                   {task.taskName}
@@ -181,25 +220,17 @@ const ToDoList = () => {
             <input
               type="text"
               className="input w-full input-primary"
-              value={addTask}
+              value={addTaskText}
               placeholder="Add Task"
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setAddTask(e.target.value)
+                setAddTaskText(e.target.value)
               }
             />
             <div className="absolute right-0 top-0">
               <button
                 className="btn btn-primary px-2 rounded-none"
                 type="submit"
-                onClick={() => {
-                  const updateTasks = [
-                    ...tasks,
-                    { taskName: addTask, completed: false },
-                  ];
-
-                  setForm({ ...form, tasks: updateTasks });
-                  setAddTask("");
-                }}
+                onClick={addTaskFun}
               >
                 Add it
               </button>
@@ -207,7 +238,7 @@ const ToDoList = () => {
                 className="btn btn-error px-2 rounded-s-none"
                 type="submit"
                 onClick={() => {
-                  setAddTask("");
+                  setAddTaskText("");
                   setAddingTask(false);
                 }}
               >

@@ -130,7 +130,7 @@ const Home = () => {
           <input
             type="file"
             accept="image/*"
-            className="input input-primary w-1/3"
+            className="input input-primary w-1/3 cursor-pointer"
           />
         </div>
         {form.tasks.map((task, index) => (
