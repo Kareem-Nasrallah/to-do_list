@@ -359,7 +359,7 @@ const ToDoList = () => {
             )}
           </Droppable>
         </DragDropContext>
-        {form.icon && (
+        {form.icon ? (
           <div className="w-100 h-100 rounded-xl max-w-lg my-4 overflow-hidden relative">
             <img
               src={form.icon}
@@ -370,7 +370,35 @@ const ToDoList = () => {
               htmlFor="iconInput"
               className="btn btn-outline btn-primary w-full cursor-pointer my-2"
             >
-              {form.icon ? `Change List Icon` : "Choose List Icon"}
+              Change List Icon
+            </label>
+            <input
+              type="file"
+              id="iconInput"
+              accept="image/*"
+              className="hidden"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onloadend = () => {
+                    setForm({
+                      ...form,
+                      icon: reader.result as string,
+                    });
+                  };
+                  reader.readAsDataURL(file);
+                }
+              }}
+            />
+          </div>
+        ) : (
+          <div>
+            <label
+              htmlFor="iconInput"
+              className="btn btn-outline btn-primary w-full cursor-pointer my-2"
+            >
+              Choose List Icon
             </label>
             <input
               type="file"

@@ -119,7 +119,7 @@ const Home = () => {
         <h2 className="text-3xl font-semibold">All To-Dos</h2>
 
         {!createToDoList && (
-          <label className="floating-label mt-4 text-primary max-w-1/2">
+          <label className="floating-label mt-4 text-primary flex-1/4 mx-2 max-w-1/2">
             <span>Search by Task Name</span>
             <input
               type="text"
