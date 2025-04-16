@@ -174,6 +174,13 @@ const ToDoList = () => {
     setForm({ ...form, tasks: reordered });
   };
 
+  // Delete list from localStorage
+  const deleteList = (id: string) => {
+    const updatedLists = toDoLists.filter((list) => list.listId !== id);
+    localStorage.setItem(userEmail, JSON.stringify(updatedLists));
+    navigate("/");
+  };
+
   return (
     <div className="min-h-[75vh]">
       {/* Header List section with list name and completion toggle */}
@@ -433,6 +440,12 @@ const ToDoList = () => {
             save ? "opacity-100" : "opacity-0"
           }`}
         />
+        <button
+          onClick={() => deleteList(form.listId)}
+          className="btn btn-outline btn-error"
+        >
+          Delete List
+        </button>
       </div>
     </div>
   );
