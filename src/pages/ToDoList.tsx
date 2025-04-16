@@ -1,6 +1,5 @@
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { RootState } from "../redux/store";
 import { useEffect, useState } from "react";
 import { MdCheckCircle, MdEdit } from "react-icons/md";
 import { FaTrashCan, FaXmark } from "react-icons/fa6";
@@ -11,6 +10,7 @@ import {
   Draggable,
   DropResult,
 } from "@hello-pangea/dnd";
+import { RootState } from "../redux/store";
 
 // Task and List types
 interface TaskType {
@@ -80,7 +80,7 @@ const ToDoList = () => {
       addTaskFunction();
     }
 
-    // selected task
+    // Navigate task list with arrows
     if (e.key === "ArrowDown") {
       e.preventDefault();
       console.log(selectedIndex);
@@ -93,22 +93,26 @@ const ToDoList = () => {
       console.log(selectedIndex);
       setSelectedIndex((prev) => (prev === null ? 0 : Math.max(prev - 1, 0)));
     }
+    // Deselect with Escape
     if (e.key === "Escape" && selectedIndex !== null) {
       e.preventDefault();
       setSelectedIndex(null);
     }
 
+    // Toggle task completion with Space
     if (e.key === " " && selectedIndex !== null) {
       e.preventDefault();
       toggleComplete(selectedIndex);
     }
 
+    // Edit task with Enter or 'e'
     if ((e.key === "e" || e.key === "Enter") && selectedIndex !== null) {
       e.preventDefault();
       editTask(selectedIndex);
       setEditIndex(selectedIndex);
     }
 
+    // Delete task with Delete key
     if (e.key === "Delete" && selectedIndex !== null) {
       e.preventDefault();
       deleteTask(selectedIndex);
@@ -119,10 +123,11 @@ const ToDoList = () => {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [selectedIndex]);
-  console.log(tasks);
-  // Handlers
+
+  // Add new task to the list
   const addTaskFunction = () => {
     if (addTaskText.trim() === "") return;
+
     const updateTasks = [
       ...tasks,
       {
@@ -137,12 +142,14 @@ const ToDoList = () => {
     setAddingTask(false);
   };
 
+  // Toggle completion status of a task
   const toggleComplete = (index: number) => {
     const updated = [...form.tasks];
     updated[index].completed = !updated[index].completed;
     setForm({ ...form, tasks: updated });
   };
 
+  // Edit task name
   const editTask = (index: number) => {
     const updateTasks = tasks.map((task, i) =>
       i === index ? { ...task, taskName: editTaskText } : task
@@ -151,6 +158,7 @@ const ToDoList = () => {
     setEditIndex(null);
   };
 
+  // Delete task
   const deleteTask = (index: number) => {
     const updated = form.tasks.filter((_, i) => i !== index);
     setForm({ ...form, tasks: updated });
@@ -205,8 +213,9 @@ const ToDoList = () => {
         value={progressPercent}
         max="100"
       ></progress>
+
+      {/*  TODO: The task list UI  */}
       <div className="flex justify-between mb">
-        {/* Task List */}
         <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable droppableId="taskList">
             {(provided) => (
@@ -357,7 +366,10 @@ const ToDoList = () => {
               alt="List Icon"
               className="w-full rounded-xl"
             />
-            <label htmlFor="iconInput" className="btn btn-outline btn-primary w-full cursor-pointer my-2">
+            <label
+              htmlFor="iconInput"
+              className="btn btn-outline btn-primary w-full cursor-pointer my-2"
+            >
               {form.icon ? `Change List Icon` : "Choose List Icon"}
             </label>
             <input

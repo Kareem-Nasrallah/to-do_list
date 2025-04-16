@@ -4,46 +4,47 @@ import { RootState } from "../redux/store";
 import ListWindow from "../componentes/ListWindow";
 import { FaArrowRightLong } from "react-icons/fa6";
 
+interface TaskType {
+  taskId: number;
+  taskName: string;
+  completed: boolean;
+}
+interface ToDoListType {
+  listId: number;
+  listName: string;
+  icon: string;
+  date: string;
+  done: boolean;
+  tasks: TaskType[];
+}
+
 const Home = () => {
   const userEmail = useSelector((state: RootState) => state.user.userEmail);
 
+  // Load saved lists from localStorage based on user email
   const ListsData = JSON.parse(localStorage.getItem(userEmail) || "[]");
 
-  interface TaskType {
-    taskId: number;
-    taskName: string;
-    completed: boolean;
-  }
-  interface ToDoListType {
-    listId: number;
-    listName: string;
-    icon: string;
-    date: string;
-    done: boolean;
-    tasks: TaskType[];
-  }
-
   const [createToDoList, setCreateToDoList] = useState(false);
-
   const [search, setSearch] = useState("");
 
-  const [form, setForm] = useState({
+  // Form state for new list
+  const [form, setForm] = useState<ToDoListType>({
     listId: 0,
     listName: "",
     icon: "",
     date: "",
     done: false,
     tasks: [],
-  } as ToDoListType);
+  });
+
   const [newTask, setNewTask] = useState("");
   const [validate, setValidate] = useState(false);
   const [sortOrder, setSortOrder] = useState("latest");
 
   const addTask = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    if (newTask == "") {
-      return;
-    }
+    if (newTask == "") return;
+
     setNewTask("");
     setForm({
       ...form,
@@ -58,6 +59,7 @@ const Home = () => {
     });
   };
 
+  // Submit and save new to-do list
   const createList = (e: FormEvent<HTMLElement>) => {
     e.preventDefault();
 
@@ -65,14 +67,16 @@ const Home = () => {
       setValidate(true);
       return;
     }
+
     setCreateToDoList(false);
     setValidate(false);
 
     const prevData = JSON.parse(localStorage.getItem(userEmail) || "[]");
 
-    const oldDataList = prevData ? prevData : [];
+    const oldDataList = prevData || [];
 
     const date = new Date().toLocaleDateString("en-US");
+
     const newList = {
       ...form,
       date: date,
@@ -80,6 +84,8 @@ const Home = () => {
 
     const newDataLists = [...oldDataList, newList];
     localStorage.setItem(userEmail, JSON.stringify(newDataLists));
+
+    // Reset form after creating the list
     setForm({
       listId: 0,
       listName: "",
@@ -90,6 +96,7 @@ const Home = () => {
     });
   };
 
+  // Sort lists based on user selection
   const sortedLists = [...ListsData].sort((a, b) => {
     switch (sortOrder) {
       case "latest":
@@ -107,8 +114,10 @@ const Home = () => {
 
   return (
     <div className="min-h-[77vh]">
+      {/* Header and search/sort controls */}
       <div className="w-full flex justify-between items-center">
         <h2 className="text-3xl font-semibold">All To-Dos</h2>
+
         {!createToDoList && (
           <label className="floating-label mt-4 text-primary max-w-1/2">
             <span>Search by Task Name</span>
@@ -144,6 +153,8 @@ const Home = () => {
           </button>
         </div>
       </div>
+
+      {/* Form for creating a new list */}
       <form
         onSubmit={createList}
         className={`w-2/3 p-2 mx-auto mb-5 transition-all ${
@@ -170,6 +181,8 @@ const Home = () => {
                 : "border-indigo-300"
             }`}
           />
+
+          {/* File input for list icon */}
           <input
             type="file"
             accept="image/*"
@@ -189,6 +202,8 @@ const Home = () => {
             }}
           />
         </div>
+
+        {/* Display added tasks */}
         {form.tasks.map((task, index) => (
           <div key={index} className="my-2">
             <label className="fieldset-label w-fit">
@@ -212,6 +227,8 @@ const Home = () => {
             </label>
           </div>
         ))}
+
+        {/* Input to add new task */}
         <div className="relative my-2 w-full">
           <input
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -234,6 +251,7 @@ const Home = () => {
             <FaArrowRightLong />
           </button>
         </div>
+
         <button
           type="submit"
           className="btn btn-primary w-2/3 block mx-auto text-xl"
@@ -241,6 +259,8 @@ const Home = () => {
           create
         </button>
       </form>
+
+      {/* Conditional rendering of lists */}
       {sortedLists.length < 1 ? (
         <div className="h-[50vh] flex items-center justify-center">
           <h3 className="text-center text-2xl ">
@@ -257,6 +277,7 @@ const Home = () => {
               icon={list.icon}
               date={list.date}
               tasks={list.tasks}
+              done={list.done}
             />
           ))}
         </div>
@@ -274,6 +295,7 @@ const Home = () => {
                 icon={list.icon}
                 date={list.date}
                 tasks={list.tasks}
+                done={list.done}
               />
             ))}
         </div>

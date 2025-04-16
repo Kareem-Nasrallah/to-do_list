@@ -1,9 +1,11 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { changeUser } from "../redux/userSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { changeUser } from "../redux/userSlice";
 import { RootState } from "../redux/store";
+import users from "../../data/users.json";
 
+// form input type
 interface formType {
   email: string;
   password: string;
@@ -12,42 +14,54 @@ interface formType {
 const LogIn = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  // Get current user state from Redux store
   const user = useSelector((state: RootState) => state.user.userEmail);
 
+  // If user is already logged in, redirect to home
   useEffect(() => {
     if (user) {
       navigate("/", { replace: true });
     }
   }, [user, navigate]);
 
-  const [isUser, setIsUser] = useState<boolean>(false);
-  const [validate, setValidat] = useState<boolean>(false);
+  // Local state
   const [form, setForm] = useState<formType>({
     email: "",
     password: "",
   });
-
   const [rememberMe, setRememberMe] = useState<boolean>(false);
+  const [validate, setValidat] = useState<boolean>(false);
+  const [isUser, setIsUser] = useState<boolean>(false);
 
+  // Handle form submission
   const formSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (form.email != "" && form.password.length > 7) {
+
+    // Validate inputs
+    const isEmailFilled = form.email !== "";
+    const isPasswordValid = form.password.length > 7;
+
+    if (isEmailFilled && isPasswordValid) {
+      // Search for matching user
       const foundUser = users.users.find(
-        (user) => user.email === form.email && user.password === form.password
+        (user: { email: string; password: string; name: string }) =>
+          user.email === form.email && user.password === form.password
       );
 
       if (foundUser) {
+        // Reset states and clear form
         setValidat(false);
         setIsUser(false);
-
         setForm({
           email: "",
           password: "",
         });
-        navigate("/", { replace: true });
 
+        // Update Redux state
         dispatch(changeUser({ email: foundUser.email, name: foundUser.name }));
 
+        // Persist user info in local or session storage
         if (rememberMe) {
           localStorage.setItem("userEmail", foundUser.email);
           localStorage.setItem("userName", foundUser.name);
@@ -55,10 +69,15 @@ const LogIn = () => {
           sessionStorage.setItem("userEmail", foundUser.email);
           sessionStorage.setItem("userName", foundUser.name);
         }
+
+        // Navigate to home
+        navigate("/", { replace: true });
       } else {
+        // No user matched
         setIsUser(true);
       }
     } else {
+      // Form is incomplete or password is too short
       setValidat(true);
     }
   };
@@ -69,6 +88,7 @@ const LogIn = () => {
         className="w-1/2 min-w-xs mb-4 p-4 text-primary border border-primary"
         onSubmit={formSubmit}
       >
+        {/* Email Field */}
         <label
           className={`floating-label mt-4 ${
             validate && form.email == "" ? "text-error" : "text-primary "
@@ -89,6 +109,8 @@ const LogIn = () => {
             }`}
           />
         </label>
+
+        {/* Password Field */}
         <label
           className={`floating-label my-6 ${
             validate && form.password.length < 8 ? "text-error" : "text-primary"
@@ -109,11 +131,15 @@ const LogIn = () => {
             }`}
           />
         </label>
+
+        {/* Submit Button */}
         <div className="my-6 flex justify-center">
           <button type="submit" className="btn btn-primary w-full max-w-2xs">
             Login
           </button>
         </div>
+
+        {/* Remember Me Checkbox */}
         <label className="fieldset-label w-fit m-auto dark:text-primary-content">
           <input
             type="checkbox"
@@ -124,6 +150,8 @@ const LogIn = () => {
           Remember me
         </label>
       </form>
+
+      {/* Error Message */}
       <p className="w-1/2 min-w-xs mb-16 text-error">
         {isUser && "Incorrect email or password"}
       </p>

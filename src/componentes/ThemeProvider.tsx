@@ -6,6 +6,7 @@ interface themeProviderProps {
   children: ReactNode;
 }
 
+// Applies the current theme mode (dark/light) to the root HTML element
 const ThemeProvider = ({ children }: themeProviderProps) => {
   const mode = useSelector((state: RootState) => state.theme.mode);
 
