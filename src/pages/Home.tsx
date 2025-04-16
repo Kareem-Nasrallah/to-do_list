@@ -10,12 +10,14 @@ const Home = () => {
   const ListsData = JSON.parse(localStorage.getItem(userEmail) || "[]");
 
   interface TaskType {
+    taskId: number;
     taskName: string;
     completed: boolean;
   }
   interface ToDoListType {
     listId: number;
     listName: string;
+    icon: string;
     date: string;
     done: boolean;
     tasks: TaskType[];
@@ -28,6 +30,7 @@ const Home = () => {
   const [form, setForm] = useState({
     listId: 0,
     listName: "",
+    icon: "",
     date: "",
     done: false,
     tasks: [],
@@ -43,7 +46,14 @@ const Home = () => {
     setNewTask("");
     setForm({
       ...form,
-      tasks: [...form.tasks, { taskName: newTask, completed: false }],
+      tasks: [
+        ...form.tasks,
+        {
+          taskId: form.tasks.length + 1 || 1,
+          taskName: newTask,
+          completed: false,
+        },
+      ],
     });
   };
 
@@ -72,6 +82,7 @@ const Home = () => {
     setForm({
       listId: 0,
       listName: "",
+      icon: "",
       date: "",
       done: false,
       tasks: [],
@@ -80,7 +91,7 @@ const Home = () => {
 
   return (
     <div className="min-h-[77vh]">
-      <div className="w-full flex justify-between items-center mb-4">
+      <div className="w-full flex justify-between items-center">
         <h2 className="text-3xl font-semibold">All To-Dos</h2>
         {!createToDoList && (
           <label className="floating-label mt-4 text-primary w-1/2 min-w-xs">
@@ -96,17 +107,44 @@ const Home = () => {
             />
           </label>
         )}
-        <button
-          onClick={() => setCreateToDoList(!createToDoList)}
-          className="btn btn-primary block my-2"
-        >
-          New List
-        </button>
+        <div className="flex items-center justify-center gap-2">
+          <button
+            className="btn btn-dash btn-primary dark:text-indigo-100"
+            popoverTarget="popover-1"
+            style={{ anchorName: "--anchor-1" } }
+          >
+            Sort by
+          </button>
+
+          <ul
+            className="dropdown menu w-20 bg-indigo-200 rounded-box dark:bg-indigo-900 shadow-sm"
+            popover="auto"
+            id="popover-1"
+            style={
+              { positionAnchor: "--anchor-1" } 
+            }
+          >
+            <li className="dropdown-item">
+              <a>Item 1</a>
+            </li>
+            <li>
+              <a>Item 2</a>
+            </li>
+          </ul>
+          <button
+            onClick={() => setCreateToDoList(!createToDoList)}
+            className="btn btn-primary block my-2"
+          >
+            New List
+          </button>
+        </div>
       </div>
       <form
         onSubmit={createList}
-        className={`w-2/3 overflow-auto mx-auto my-5 transition-all ${
-          createToDoList ? "scale-100 max-h-[230px]" : "scale-95 max-h-0"
+        className={`w-2/3 p-2 mx-auto mb-5 transition-all ${
+          createToDoList
+            ? "scale-100 max-h-[230px] overflow-y-auto"
+            : "scale-95 max-h-0 overflow-hidden"
         }`}
       >
         <div className="w-full flex items-center gap-2">
@@ -130,7 +168,20 @@ const Home = () => {
           <input
             type="file"
             accept="image/*"
-            className="input input-primary w-1/3 cursor-pointer"
+            className="file-input file-input-bordered file-input-primary w-1/3 cursor-pointer my-2"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                  setForm({
+                    ...form,
+                    icon: reader.result as string,
+                  });
+                };
+                reader.readAsDataURL(file);
+              }
+            }}
           />
         </div>
         {form.tasks.map((task, index) => (
@@ -192,26 +243,30 @@ const Home = () => {
           </h3>
         </div>
       ) : search === "" || createToDoList ? (
-        <div className="flex gap-4 flex-wrap">
+        <div className="flex gap-4 flex-wrap items-center justify-start">
           {ListsData!.map((list: ToDoListType) => (
             <ListWindow
               key={list.listId}
               listId={list.listId}
               listName={list.listName}
+              icon={list.icon}
               date={list.date}
               tasks={list.tasks}
             />
           ))}
         </div>
       ) : (
-        <div className="flex gap-4 flex-wrap">
+        <div className="flex gap-4 flex-wrap items-center justify-start">
           {ListsData!
-            .filter((list: ToDoListType) => list.listName.includes(search))
+            .filter((list: ToDoListType) =>
+              list.listName.toLowerCase().includes(search.toLowerCase())
+            )
             .map((list: ToDoListType) => (
               <ListWindow
                 key={list.listId}
                 listId={list.listId}
                 listName={list.listName}
+                icon={list.icon}
                 date={list.date}
                 tasks={list.tasks}
               />

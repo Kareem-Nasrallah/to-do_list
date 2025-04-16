@@ -1,22 +1,27 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { changeUser } from "../redux/userSlice";
-import { useDispatch } from "react-redux";
-import users from "../../data/users.json";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../redux/store";
+
+interface formType {
+  email: string;
+  password: string;
+}
 
 const LogIn = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const user = useSelector((state: RootState) => state.user.userEmail);
 
-  interface formType {
-    email: string;
-    password: string;
-  }
+  useEffect(() => {
+    if (user) {
+      navigate("/", { replace: true });
+    }
+  }, [user, navigate]);
 
   const [isUser, setIsUser] = useState<boolean>(false);
-
   const [validate, setValidat] = useState<boolean>(false);
-
   const [form, setForm] = useState<formType>({
     email: "",
     password: "",
@@ -39,7 +44,7 @@ const LogIn = () => {
           email: "",
           password: "",
         });
-        navigate("../");
+        navigate("/", { replace: true });
 
         dispatch(changeUser({ email: foundUser.email, name: foundUser.name }));
 
