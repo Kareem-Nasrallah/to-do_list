@@ -27,7 +27,7 @@ const ListWindow = ({
       to={`/list/${listId}`}
       className="bg-indigo-200 dark:border-indigo-300 dark:bg-indigo-800 rounded-md cursor-pointer border border-primary p-4 pb-2 scale-95 hover:scale-100 transition-all w-70 h-44 shadow-md shadow-indigo-300 dark:shadow-indigo-900 hover:shadow-lg hover:shadow-indigo-500 dark:hover:shadow-indigo-700"
     >
-      <div className={`flex h-26 ${icon?`justify-around`:'justify-center'} items-center gap-2`}>
+      <div className={`flex h-26 ${icon?`justify-around`:'justify-center'} items-center mb-4 gap-2`}>
         {icon && (
           <div className="flex justify-center items-center rounded-xl w-30 overflow-hidden ">
             <img src={icon} alt="" className="w-full" />

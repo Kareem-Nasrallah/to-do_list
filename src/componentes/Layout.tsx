@@ -4,6 +4,7 @@ import Header from './Header'
 
 const Layout = () => {
 
+  // Main layout structure
   return (
     <div className='min-h-screen dark:text-primary-content bg-primary-content dark:bg-slate-950'>
         <Header/>

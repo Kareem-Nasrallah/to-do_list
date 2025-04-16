@@ -8,15 +8,17 @@ import RequireAuth from "./componentes/RequireAuth";
 import ToDoList from "./pages/ToDoList";
 
 function App() {
+  // Define application routes with protected and public paths
   const router = createBrowserRouter([
     {
       path: "/",
       element: (
+        // Protect layout and nested routes
         <RequireAuth>
           <Layout />
         </RequireAuth>
       ),
-      errorElement: <NotFound />,
+      errorElement: <NotFound />, // Fallback for invalid routes
       children: [
         {
           index: true,
@@ -35,6 +37,7 @@ function App() {
   ]);
   return (
     <>
+      {/* Provide the router to the app */}
       <RouterProvider router={router} />
     </>
   );

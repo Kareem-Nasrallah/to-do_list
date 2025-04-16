@@ -6,10 +6,12 @@ import { RootState } from "../redux/store";
 const RequireAuth = ({ children }: { children: JSX.Element }) => {
   const location = useLocation();
 
-  const authenticated = useSelector((store:RootState)=>store.user.userEmail) == '';
+  const isAuthenticated = useSelector(
+    (store: RootState) => store.user.userEmail !== ""
+  );
 
-  if (authenticated) {
-    return <Navigate to="./login" state={{ from: location }} replace />;
+  if (isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   return children;

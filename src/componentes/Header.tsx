@@ -8,17 +8,20 @@ import { useState } from "react";
 const Header = () => {
   const dispatch = useDispatch();
 
+  // Get current theme mode from Redux store
   const theme = useSelector((state: RootState) => state.theme.mode);
-
   const themeCheck = theme === "light";
 
+  // Get user info from Redux store
   const userName = useSelector((state: RootState) => state.user.userName);
   const userEmail = useSelector((state: RootState) => state.user.userEmail);
 
+  // Toggle sign-out button visibility
   const [apeareSignout, setApeareSignout] = useState(false);
 
   return (
     <header className="px-6 py-2 flex justify-between items-center bg-indigo-200 dark:bg-slate-900 ">
+      {/* Logo/Title */}
       <Link
         to="./"
         className="text-shadow-lg dark:text-shadow-indigo-900 first-letter:text-primary dark:first-letter:text-indigo-500"
@@ -29,6 +32,8 @@ const Header = () => {
           <span className="text-primary dark:text-indigo-500">F</span>low
         </h1>
       </Link>
+
+      {/* User Info + Sign Out Button */}
       <div className="relative">
         <div
           onClick={() => setApeareSignout(!apeareSignout)}
@@ -37,6 +42,8 @@ const Header = () => {
           <h3 className="">{userName}</h3>
           <p className="text-xs">{userEmail}</p>
         </div>
+
+        {/* Sign Out Button */}
         <button
           className={`absolute transition-all ${
             apeareSignout ? "top-[110%]" : "top-1"
@@ -48,6 +55,8 @@ const Header = () => {
           Sign Out
         </button>
       </div>
+
+      {/* Theme Toggle (light/dark) */}
       <label className="swap swap-rotate hover:scale-105 ">
         <input
           type="checkbox"
@@ -55,6 +64,7 @@ const Header = () => {
           onChange={() => dispatch(toggleTheme())}
         />
 
+        {/* Light Icon */}
         <svg
           className="swap-off h-10 w-10 fill-current"
           xmlns="http://www.w3.org/2000/svg"
@@ -63,6 +73,7 @@ const Header = () => {
           <path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z" />
         </svg>
 
+        {/* Dark Icon */}
         <svg
           className="swap-on h-10 w-10 fill-current"
           xmlns="http://www.w3.org/2000/svg"

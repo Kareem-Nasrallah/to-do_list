@@ -37,6 +37,7 @@ const Home = () => {
   } as ToDoListType);
   const [newTask, setNewTask] = useState("");
   const [validate, setValidate] = useState(false);
+  const [sortOrder, setSortOrder] = useState("latest");
 
   const addTask = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -89,12 +90,27 @@ const Home = () => {
     });
   };
 
+  const sortedLists = [...ListsData].sort((a, b) => {
+    switch (sortOrder) {
+      case "latest":
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
+      case "oldest":
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
+      case "az":
+        return a.listName.localeCompare(b.listName);
+      case "za":
+        return b.listName.localeCompare(a.listName);
+      default:
+        return 0;
+    }
+  });
+
   return (
     <div className="min-h-[77vh]">
       <div className="w-full flex justify-between items-center">
         <h2 className="text-3xl font-semibold">All To-Dos</h2>
         {!createToDoList && (
-          <label className="floating-label mt-4 text-primary w-1/2 min-w-xs">
+          <label className="floating-label mt-4 text-primary max-w-1/2">
             <span>Search by Task Name</span>
             <input
               type="text"
@@ -108,29 +124,18 @@ const Home = () => {
           </label>
         )}
         <div className="flex items-center justify-center gap-2">
-          <button
-            className="btn btn-dash btn-primary dark:text-indigo-100"
-            popoverTarget="popover-1"
-            style={{ anchorName: "--anchor-1" } }
+          <label htmlFor="sortSec">Sort by:</label>
+          <select
+            id="sortSec"
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+            className="select select-primary my-2 w-24 bg-indigo-400 dark:text-black"
           >
-            Sort by
-          </button>
-
-          <ul
-            className="dropdown menu w-20 bg-indigo-200 rounded-box dark:bg-indigo-900 shadow-sm"
-            popover="auto"
-            id="popover-1"
-            style={
-              { positionAnchor: "--anchor-1" } 
-            }
-          >
-            <li className="dropdown-item">
-              <a>Item 1</a>
-            </li>
-            <li>
-              <a>Item 2</a>
-            </li>
-          </ul>
+            <option value="latest">Latest</option>
+            <option value="oldest">Oldest</option>
+            <option value="az">A–Z</option>
+            <option value="za">Z–A</option>
+          </select>
           <button
             onClick={() => setCreateToDoList(!createToDoList)}
             className="btn btn-primary block my-2"
@@ -236,7 +241,7 @@ const Home = () => {
           create
         </button>
       </form>
-      {ListsData.length < 1 ? (
+      {sortedLists.length < 1 ? (
         <div className="h-[50vh] flex items-center justify-center">
           <h3 className="text-center text-2xl ">
             Please creat a new To-Do List
@@ -244,7 +249,7 @@ const Home = () => {
         </div>
       ) : search === "" || createToDoList ? (
         <div className="flex gap-4 flex-wrap items-center justify-start">
-          {ListsData!.map((list: ToDoListType) => (
+          {sortedLists!.map((list: ToDoListType) => (
             <ListWindow
               key={list.listId}
               listId={list.listId}
@@ -257,7 +262,7 @@ const Home = () => {
         </div>
       ) : (
         <div className="flex gap-4 flex-wrap items-center justify-start">
-          {ListsData!
+          {sortedLists!
             .filter((list: ToDoListType) =>
               list.listName.toLowerCase().includes(search.toLowerCase())
             )
