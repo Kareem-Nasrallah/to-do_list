@@ -273,6 +273,7 @@ const Home = () => {
               tasks={list.tasks}
               done={list.done}
               setRender={setRender}
+              render={render}
             />
           ))}
         </div>
@@ -292,6 +293,7 @@ const Home = () => {
                 tasks={list.tasks}
                 done={list.done}
                 setRender={setRender}
+                render={render}
               />
             ))}
         </div>

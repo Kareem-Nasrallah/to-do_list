@@ -64,7 +64,9 @@ const Header = () => {
               }`}
             >
               <h3 className="text-sm whitespace-nowrap mb-2">{userName}</h3>
-              <p className="text-sm border-y-2 border-zinc-400 py-2">{userEmail}</p>
+              <p className="text-sm border-y-2 border-zinc-400 py-2">
+                {userEmail}
+              </p>
               <p
                 className="text-sm m-auto text-rose-600 hover:text-red-400 whitespace-nowrap cursor-pointer mt-2"
                 onClick={() => {

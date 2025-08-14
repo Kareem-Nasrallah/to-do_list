@@ -18,9 +18,18 @@ interface ToDoListType {
   done: boolean;
   tasks: TaskType[];
   setRender: Dispatch<SetStateAction<boolean>>;
+  render: boolean;
 }
 
-const ListWindow = ({ listId, listName, icon, date, tasks, setRender }: ToDoListType) => {
+const ListWindow = ({
+  listId,
+  listName,
+  icon,
+  date,
+  tasks,
+  setRender,
+  render,
+}: ToDoListType) => {
   // Calculate the progress percentage based on completed tasks
   const tasksDoneCount = tasks.filter((task) => task.completed == true).length;
   const totalCount = tasks.length;
@@ -36,7 +45,7 @@ const ListWindow = ({ listId, listName, icon, date, tasks, setRender }: ToDoList
   const deleteList = (e: React.MouseEvent<HTMLButtonElement>, id: string) => {
     e.stopPropagation(); // يمنع وصول الحدث للأب
     e.preventDefault(); // يمنع الـ <Link> من تنفيذ الانتقال
-    console.log("delete clicked");
+    console.log("the render happen and it is ", render);
     const updatedLists = toDoLists.filter((list) => list.listId !== id);
     localStorage.setItem(userEmail, JSON.stringify(updatedLists));
     setRender((prev) => !prev); // Trigger re-render
