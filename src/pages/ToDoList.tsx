@@ -60,6 +60,7 @@ const ToDoList = () => {
 
   // Save the list changes
   const saveListEdits = () => {
+    console.log('save clicked')
     const updatedLists = toDoLists.map((list) =>
       list.listId === form.listId ? form : list
     );
@@ -83,14 +84,12 @@ const ToDoList = () => {
     // Navigate task list with arrows
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      console.log(selectedIndex);
       setSelectedIndex((prev) =>
         prev === null ? 0 : Math.min(prev + 1, tasks.length - 1)
       );
     }
     if (e.key === "ArrowUp") {
       e.preventDefault();
-      console.log(selectedIndex);
       setSelectedIndex((prev) => (prev === null ? 0 : Math.max(prev - 1, 0)));
     }
     // Deselect with Escape
@@ -182,7 +181,10 @@ const ToDoList = () => {
   };
 
   return (
-    <div className="min-h-[75vh]">
+    <div
+      className="px-6 py-2 overflow-auto"
+      style={{ height: "calc(100vh - 94px - 94px)" }}
+    >
       {/* Header List section with list name and completion toggle */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold">{toDoList!.listName}</h2>
@@ -222,12 +224,12 @@ const ToDoList = () => {
       ></progress>
 
       {/*  TODO: The task list UI  */}
-      <div className="flex justify-between mb">
+      <div className="flex flex-col-reverse sm:flex-row justify-between mb py-4">
         <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable droppableId="taskList">
             {(provided) => (
               <ul
-                className="w-1/2 max-w-lg"
+                className="w-full sm:w-1/2 max-w-lg"
                 {...provided.droppableProps}
                 ref={provided.innerRef}
               >
@@ -366,72 +368,44 @@ const ToDoList = () => {
             )}
           </Droppable>
         </DragDropContext>
-        {form.icon ? (
-          <div className="w-100 h-100 rounded-xl max-w-lg my-4 overflow-hidden relative">
+        <div className="rounded-xl sm:max-w-lg my-4 overflow-hidden relative flex flex-col">
+          {form.icon && (
             <img
               src={form.icon}
               alt="List Icon"
-              className="w-full rounded-xl"
+              className="inline-block mx-auto max-h-80 rounded-xl"
             />
-            <label
-              htmlFor="iconInput"
-              className="btn btn-outline btn-primary w-full cursor-pointer my-2"
-            >
-              Change List Icon
-            </label>
-            <input
-              type="file"
-              id="iconInput"
-              accept="image/*"
-              className="hidden"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                const file = e.target.files?.[0];
-                if (file) {
-                  const reader = new FileReader();
-                  reader.onloadend = () => {
-                    setForm({
-                      ...form,
-                      icon: reader.result as string,
-                    });
-                  };
-                  reader.readAsDataURL(file);
-                }
-              }}
-            />
-          </div>
-        ) : (
-          <div>
-            <label
-              htmlFor="iconInput"
-              className="btn btn-outline btn-primary w-full cursor-pointer my-2"
-            >
-              Choose List Icon
-            </label>
-            <input
-              type="file"
-              id="iconInput"
-              accept="image/*"
-              className="hidden"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                const file = e.target.files?.[0];
-                if (file) {
-                  const reader = new FileReader();
-                  reader.onloadend = () => {
-                    setForm({
-                      ...form,
-                      icon: reader.result as string,
-                    });
-                  };
-                  reader.readAsDataURL(file);
-                }
-              }}
-            />
-          </div>
-        )}
+          )}
+          <label
+            htmlFor="iconInput"
+            className={`btn btn-outline btn-primary w-full cursor-pointer my-2 ${!form.icon && "btn-dash h-40"}`}
+          >
+            {form.icon ? "Change List Icon" : "Choose List Icon"}
+          </label>
+          <input
+            type="file"
+            id="iconInput"
+            accept="image/*"
+            className="hidden"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                  setForm({
+                    ...form,
+                    icon: reader.result as string,
+                  });
+                };
+                reader.readAsDataURL(file);
+              }
+            }}
+          />
+        </div>
       </div>
 
       {/* Save List changes Button */}
-      <div className="flex justify-center items-center gap-2">
+      <div className="flex justify-center items-center gap-2 pb-4">
         <button onClick={saveListEdits} className="btn btn-primary text-lg">
           Save
         </button>

@@ -1,3 +1,41 @@
+/* tailwindcss code */
 @import "tailwindcss";
 @plugin "daisyui";
 @custom-variant dark (&:where(.dark, .dark *));
+
+@import url("https://fonts.googleapis.com/css2?family=Lora:ital,wght@1,400..700&display=swap");
+
+.layout-box {
+  background: color-mix(in srgb, var(--color-primary-content) 80%, transparent);
+}
+.dark .layout-box {
+  background: color-mix(in srgb, var(--color-slate-900) 80%, transparent);
+}
+
+#quotes {
+  --color-primary-content: #006d8f;
+}
+
+#quotes p {
+  font-family: "Lora", serif;
+  font-style: italic;
+}
+
+/* background motion */
+@keyframes backgroundMotion {
+  0% {
+    background-position: center;
+  }
+  25% {
+    background-position: 20% 20%;
+  }
+  50% {
+    background-position: 20% 50%;
+  }
+  75% {
+    background-position: 50% 20%;
+  }
+  100% {
+    background-position: center;
+  }
+}

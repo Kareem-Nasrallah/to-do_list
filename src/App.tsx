@@ -2,9 +2,9 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Layout from "./componentes/Layout";
 import NotFound from "./pages/NotFound";
 import Home from "./pages/Home";
-import LogIn from "./pages/LogIn";
 import RequireAuth from "./componentes/RequireAuth";
 import ToDoList from "./pages/ToDoList";
+import AuthPage from "./pages/AuthPage";
 
 function App() {
   // Define application routes with protected and public paths
@@ -17,7 +17,11 @@ function App() {
           <Layout />
         </RequireAuth>
       ),
-      errorElement: <NotFound />, // Fallback for invalid routes
+      errorElement: (
+        <Layout>
+          <NotFound />
+        </Layout>
+      ), // Fallback for invalid routes
       children: [
         {
           index: true,
@@ -31,14 +35,26 @@ function App() {
     },
     {
       path: "/login",
-      element: <LogIn />,
+      element: (
+        <Layout>
+          <AuthPage />
+        </Layout>
+      ),
+    },
+    {
+      path: "/register",
+      element: (
+        <Layout>
+          <AuthPage />
+        </Layout>
+      ),
     },
   ]);
   return (
-    <>
+    <div className="min-h-[100vh]">
       {/* Provide the router to the app */}
       <RouterProvider router={router} />
-    </>
+    </div>
   );
 }
 

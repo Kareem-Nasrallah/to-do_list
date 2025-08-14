@@ -2,7 +2,8 @@ import { Link } from "react-router-dom";
 
 const NotFound = () => {
   return (
-    <div className="w-screen h-screen flex flex-col items-center justify-center bg-base-100 text-center p-4">
+    <div className="flex flex-col items-center justify-center text-center p-4"
+      style={{ height: "calc(100vh - 94px - 94px)" }}>
       <h1 className="text-6xl font-bold text-error mb-4">404</h1>
       <p className="text-xl mb-6 text-base-content">Oops! The page you are looking for doesn’t exist.</p>
       

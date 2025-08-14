@@ -13,7 +13,7 @@ const RequireAuth = ({ children }: { children: JSX.Element }) => {
   const isAuthenticated = typeof userEmail === "string" && userEmail.length > 1;
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="login" state={{ from: location }} replace />;
   }
 
   return children;

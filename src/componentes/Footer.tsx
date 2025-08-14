@@ -1,7 +1,7 @@
 const Footer = () => {
   return (
     // Simple footer with creator credit and link to portfolio
-    <footer className="flex justify-center items-center px-6 py-2 bg-indigo-200 dark:bg-slate-900">
+    <footer className="flex justify-center items-center px-6 py-2 bg-indigo-200 dark:bg-slate-900 rounded-b-2xl">
       <p className="font-semibold text-lg">
         Created by{" "}
         <a
