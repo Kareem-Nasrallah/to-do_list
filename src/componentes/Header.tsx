@@ -60,7 +60,7 @@ const Header = () => {
             />
             <div
               className={`w-60 text-indigo-950 bg-gray-300 rounded border-2 border-indigo-300 p-1.5 transition-all z-20 -right-6 top-10 ${
-                apeareSignout ? "hidden" : "absolute"
+                apeareSignout ? "absolute" : "hidden"
               }`}
             >
               <h3 className="text-sm whitespace-nowrap mb-2">{userName}</h3>

@@ -21,8 +21,6 @@ const createListSchema = Yup.object({
         taskId: Yup.string(),
         taskName: Yup.string()
           .required("Task name is required")
-          .trim()
-          .min(1, "Task name is required")
           .max(30, validationMessages.maxLength(30)),
         completed: Yup.boolean(),
       })

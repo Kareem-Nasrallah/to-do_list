@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import ListWindow from "../../componentes/ListWindow";
@@ -35,11 +35,10 @@ const Home = () => {
   const [sortOrder, setSortOrder] = useState("Sort by");
 
   const addTask = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (newTask.trim() === "") {
-      e.preventDefault();
+    e.preventDefault();
+    if (newTask.length > 30) {
       return;
     }
-    e.preventDefault();
 
     const newTaskItem = {
       taskId: (formik.values.tasks.length + 1).toString(),
@@ -111,6 +110,10 @@ const Home = () => {
     onSubmit: createList,
   });
 
+  useEffect(() => {
+    console.log(formik.errors);
+  }, [formik.errors]);
+
   return (
     <div
       className="px-6 py-2 overflow-auto"
@@ -131,8 +134,8 @@ const Home = () => {
         onSubmit={formik.handleSubmit}
         className={`lg:w-2/3 w-4/5 p-2 mx-auto mb-5 transition-all ${
           createToDoList
-            ? "scale-100 max-h-[230px] overflow-y-auto"
-            : "scale-95 max-h-0 overflow-hidden"
+            ? "scale-100 max-h-[230px] overflow-y-auto opacity-100"
+            : "scale-95 max-h-0 overflow-hidden opacity-0"
         }`}
       >
         <div className="w-full flex sm:flex-row flex-col items-center gap-2 my-2">
@@ -220,9 +223,7 @@ const Home = () => {
             type="text"
             placeholder="Add Task"
             className={`text-info-content w-full input input-primary input-md focus:border-primary ${
-              formik.touched.tasks &&
-              formik.errors.tasks &&
-              newTask.trim() === ""
+              formik.touched.tasks || formik.errors.tasks || newTask.length > 30
                 ? "border-red-500"
                 : "border-indigo-300"
             }`}
@@ -234,6 +235,7 @@ const Home = () => {
           <button
             className="btn btn-primary absolute top-0 right-0 rounded-s-none text-2xl p-2"
             type="submit"
+            disabled={newTask.trim() === ""}
             onClick={addTask}
           >
             <FaArrowRightLong />
@@ -244,6 +246,9 @@ const Home = () => {
           formik.errors.tasks &&
           typeof formik.errors.tasks === "string" && (
             <p className="text-error -mt-1 text-sm">{formik.errors.tasks}</p>
+          )}
+        {newTask.length > 30 && (
+            <p className="text-error -mt-1 text-sm">Must be at most 30 characters</p>
           )}
 
         <button
